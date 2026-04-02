@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "taskteto"
+version = "0.1.0"
+
+[project.scripts]
+taskteto = "taskteto.cli:main"

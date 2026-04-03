@@ -6,9 +6,9 @@ TASK_FILE = "tasklist.json"
 
 
 class TaskStatus(Enum):
-    TODO = "todo"
-    IN_PROGRESS = "in-progress"
     DONE = "done"
+    IN_PROGRESS = "in-progress"
+    TODO = "todo"
 
 
 def main():
@@ -22,6 +22,18 @@ def main():
     add_parser.add_argument("task_name", help="the name of the task to add")
 
     list_parser = subparsers.add_parser("list", help="list all tasks")
+    list_parser.add_argument(
+        "-d", "--done", action="store_true", help="list all done tasks"
+    )
+    list_parser.add_argument(
+        "-p",
+        "--in-progress",
+        action="store_true",
+        help="list all in-progress tasks",
+    )
+    list_parser.add_argument(
+        "-t", "--todo", action="store_true", help="list all todo tasks"
+    )
 
     update_parser = subparsers.add_parser(
         "update", help="update the name of a task by ID"
@@ -45,7 +57,14 @@ def main():
     if args.action == "add":
         add_task(args.task_name, tasks)
     elif args.action == "list":
-        list_tasks(tasks)
+        if args.done:
+            list_done_tasks(tasks)
+        elif args.in_progress:
+            list_in_progress_tasks(tasks)
+        elif args.todo:
+            list_todo_tasks(tasks)
+        else:
+            list_tasks(tasks)
     elif args.action == "update":
         update_task(args.task_id, args.new_task_name, tasks)
     elif args.action == "mark":
@@ -88,8 +107,28 @@ def add_task(task_name, tasks):
 
 
 def list_tasks(tasks):
-    for task in tasks:
-        print(f"{task["task_name"]} (ID: {task["id"]})")
+    if len(tasks) > 0:
+        for task in tasks:
+            print(f"(ID: {task["id"]}) {task["task_name"]} -- {task["status"]}")
+    else:
+        print("There are no tasks ^^")
+
+
+def list_done_tasks(tasks):
+    done_tasks = [t for t in tasks if t["status"] == TaskStatus.DONE.value]
+    list_tasks(done_tasks)
+
+
+def list_in_progress_tasks(tasks):
+    in_progress_tasks = [
+        t for t in tasks if t["status"] == TaskStatus.IN_PROGRESS.value
+    ]
+    list_tasks(in_progress_tasks)
+
+
+def list_todo_tasks(tasks):
+    todo_tasks = [t for t in tasks if t["status"] == TaskStatus.TODO.value]
+    list_tasks(todo_tasks)
 
 
 def update_task(task_id, new_task_name, tasks):

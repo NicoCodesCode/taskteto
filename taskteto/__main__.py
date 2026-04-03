@@ -1,7 +1,14 @@
 import argparse
 import json
+from enum import Enum
 
 TASK_FILE = "tasklist.json"
+
+
+class TaskStatus(Enum):
+    TODO = "todo"
+    IN_PROGRESS = "in-progress"
+    DONE = "done"
 
 
 def main():
@@ -22,6 +29,14 @@ def main():
     update_parser.add_argument("task_id", type=int, help="the task ID")
     update_parser.add_argument("new_task_name", help="the new name for the task")
 
+    mark_parser = subparsers.add_parser("mark", help="mark the task status")
+    mark_parser.add_argument(
+        "task_status",
+        choices=[s.value for s in TaskStatus],
+        help="the status to assign",
+    )
+    mark_parser.add_argument("task_id", type=int, help="the task ID")
+
     delete_parser = subparsers.add_parser("delete", help="delete a task by ID")
     delete_parser.add_argument("task_id", type=int, help="the task ID")
 
@@ -33,6 +48,8 @@ def main():
         list_tasks(tasks)
     elif args.action == "update":
         update_task(args.task_id, args.new_task_name, tasks)
+    elif args.action == "mark":
+        mark_task_status(args.task_id, args.task_status, tasks)
     elif args.action == "delete":
         delete_task(args.task_id, tasks)
     else:
@@ -50,7 +67,7 @@ def load_tasks():
 def write_tasks(tasks):
     try:
         with open(TASK_FILE, mode="w", encoding="utf-8") as f:
-            json.dump(tasks, f)
+            json.dump(tasks, f, indent=4)
         return True
     except OSError as e:
         print(f"Error saving tasks: {e}")
@@ -63,7 +80,7 @@ def find_task_index(task_id, tasks):
 
 def add_task(task_name, tasks):
     task_id = max((task["id"] for task in tasks), default=0) + 1
-    new_task = {"id": task_id, "task_name": task_name}
+    new_task = {"id": task_id, "task_name": task_name, "status": TaskStatus.TODO.value}
     tasks.append(new_task)
 
     if write_tasks(tasks):
@@ -82,6 +99,17 @@ def update_task(task_id, new_task_name, tasks):
         tasks[task_index]["task_name"] = new_task_name
         if write_tasks(tasks):
             print(f"Task {task_id} was updated to '{new_task_name}'")
+    else:
+        print(f"Couldn't find task with ID: {task_id}")
+
+
+def mark_task_status(task_id, status, tasks):
+    task_index = find_task_index(task_id, tasks)
+
+    if task_index is not None:
+        tasks[task_index]["status"] = status
+        if write_tasks(tasks):
+            print(f"'{tasks[task_index]["task_name"]}' was marked as {status}")
     else:
         print(f"Couldn't find task with ID: {task_id}")
 

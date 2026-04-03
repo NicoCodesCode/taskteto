@@ -58,11 +58,11 @@ def main():
         add_task(args.task_name, tasks)
     elif args.action == "list":
         if args.done:
-            list_done_tasks(tasks)
+            list_tasks_by_status(tasks, TaskStatus.DONE.value)
         elif args.in_progress:
-            list_in_progress_tasks(tasks)
+            list_tasks_by_status(tasks, TaskStatus.IN_PROGRESS.value)
         elif args.todo:
-            list_todo_tasks(tasks)
+            list_tasks_by_status(tasks, TaskStatus.TODO.value)
         else:
             list_tasks(tasks)
     elif args.action == "update":
@@ -107,28 +107,13 @@ def add_task(task_name, tasks):
 
 
 def list_tasks(tasks):
-    if len(tasks) > 0:
-        for task in tasks:
-            print(f"(ID: {task["id"]}) {task["task_name"]} -- {task["status"]}")
-    else:
-        print("There are no tasks ^^")
+    for task in tasks:
+        print(f"(ID: {task["id"]}) {task["task_name"]} -- {task["status"]}")
 
 
-def list_done_tasks(tasks):
-    done_tasks = [t for t in tasks if t["status"] == TaskStatus.DONE.value]
-    list_tasks(done_tasks)
-
-
-def list_in_progress_tasks(tasks):
-    in_progress_tasks = [
-        t for t in tasks if t["status"] == TaskStatus.IN_PROGRESS.value
-    ]
-    list_tasks(in_progress_tasks)
-
-
-def list_todo_tasks(tasks):
-    todo_tasks = [t for t in tasks if t["status"] == TaskStatus.TODO.value]
-    list_tasks(todo_tasks)
+def list_tasks_by_status(tasks, status):
+    filtered_tasks = [t for t in tasks if t["status"] == status]
+    list_tasks(filtered_tasks)
 
 
 def update_task(task_id, new_task_name, tasks):

@@ -54,7 +54,7 @@ def add_task(taskname, tasks):
     tasks.append(asdict(new_task))
 
     if write_tasks(tasks):
-        print(f"'{taskname}' was added to the list")
+        print(f"'{taskname}' was added to the list (ID: {task_id})")
 
 
 if __name__ == "__main__":

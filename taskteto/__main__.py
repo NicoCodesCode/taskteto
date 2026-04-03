@@ -1,23 +1,31 @@
 import argparse
 import json
+from dataclasses import dataclass, asdict
+
+
+@dataclass
+class Task:
+    id: int
+    task: str
+
 
 TASK_FILE = "tasklist.json"
 
 
 def main():
-    tasklist = load_tasks()
+    tasks = load_tasks()
 
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(title="Actions", dest="action")
 
     add_parser = subparsers.add_parser("add", help="add a new task")
-    add_parser.add_argument("task", help="the name of the task to add")
+    add_parser.add_argument("taskname", help="the name of the task to add")
 
     args = parser.parse_args()
 
     if args.action == "add":
-        add_task(args.task, tasklist)
+        add_task(args.taskname, tasks)
     else:
         parser.print_help()
 
@@ -40,10 +48,13 @@ def write_tasks(tasks):
         return False
 
 
-def add_task(task, tasklist):
-    tasklist.append(task)
-    if write_tasks(tasklist):
-        print(f"'{task}' was added to the list")
+def add_task(taskname, tasks):
+    task_id = max((task["id"] for task in tasks), default=0) + 1
+    new_task = Task(task_id, taskname)
+    tasks.append(asdict(new_task))
+
+    if write_tasks(tasks):
+        print(f"'{taskname}' was added to the list")
 
 
 if __name__ == "__main__":

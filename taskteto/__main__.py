@@ -14,6 +14,8 @@ def main():
     add_parser = subparsers.add_parser("add", help="add a new task")
     add_parser.add_argument("task_name", help="the name of the task to add")
 
+    list_parser = subparsers.add_parser("list", help="list all tasks")
+
     update_parser = subparsers.add_parser(
         "update", help="update the name of a task by ID"
     )
@@ -27,6 +29,8 @@ def main():
 
     if args.action == "add":
         add_task(args.task_name, tasks)
+    elif args.action == "list":
+        list_tasks(tasks)
     elif args.action == "update":
         update_task(args.task_id, args.new_task_name, tasks)
     elif args.action == "delete":
@@ -64,6 +68,11 @@ def add_task(task_name, tasks):
 
     if write_tasks(tasks):
         print(f"'{task_name}' was added to the list (ID: {task_id})")
+
+
+def list_tasks(tasks):
+    for task in tasks:
+        print(f"{task["task_name"]} (ID: {task["id"]})")
 
 
 def update_task(task_id, new_task_name, tasks):

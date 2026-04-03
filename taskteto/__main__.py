@@ -1,13 +1,5 @@
 import argparse
 import json
-from dataclasses import dataclass, asdict
-
-
-@dataclass
-class Task:
-    id: int
-    task_name: str
-
 
 TASK_FILE = "tasklist.json"
 
@@ -58,8 +50,8 @@ def write_tasks(tasks):
 
 def add_task(task_name, tasks):
     task_id = max((task["id"] for task in tasks), default=0) + 1
-    new_task = Task(task_id, task_name)
-    tasks.append(asdict(new_task))
+    new_task = {"id": task_id, "task_name": task_name}
+    tasks.append(new_task)
 
     if write_tasks(tasks):
         print(f"'{task_name}' was added to the list (ID: {task_id})")

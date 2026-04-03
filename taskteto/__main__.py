@@ -15,10 +15,13 @@ def main():
     add_parser.add_argument("task_name", help="the name of the task to add")
 
     update_parser = subparsers.add_parser(
-        "update", help="update the name of a task by the ID"
+        "update", help="update the name of a task by ID"
     )
     update_parser.add_argument("task_id", type=int, help="the task ID")
     update_parser.add_argument("new_task_name", help="the new name for the task")
+
+    delete_parser = subparsers.add_parser("delete", help="delete a task by ID")
+    delete_parser.add_argument("task_id", type=int, help="the task ID")
 
     args = parser.parse_args()
 
@@ -26,6 +29,8 @@ def main():
         add_task(args.task_name, tasks)
     elif args.action == "update":
         update_task(args.task_id, args.new_task_name, tasks)
+    elif args.action == "delete":
+        delete_task(args.task_id, tasks)
     else:
         parser.print_help()
 
@@ -48,6 +53,10 @@ def write_tasks(tasks):
         return False
 
 
+def find_task_index(task_id, tasks):
+    return next((i for i, task in enumerate(tasks) if task["id"] == task_id), None)
+
+
 def add_task(task_name, tasks):
     task_id = max((task["id"] for task in tasks), default=0) + 1
     new_task = {"id": task_id, "task_name": task_name}
@@ -58,14 +67,23 @@ def add_task(task_name, tasks):
 
 
 def update_task(task_id, new_task_name, tasks):
-    task_index = next(
-        (i for i, task in enumerate(tasks) if task["id"] == task_id), None
-    )
+    task_index = find_task_index(task_id, tasks)
 
     if task_index is not None:
         tasks[task_index]["task_name"] = new_task_name
         if write_tasks(tasks):
-            print("The task was updated")
+            print(f"Task {task_id} was updated to '{new_task_name}'")
+    else:
+        print(f"Couldn't find task with ID: {task_id}")
+
+
+def delete_task(task_id, tasks):
+    task_index = find_task_index(task_id, tasks)
+
+    if task_index is not None:
+        task_name = tasks.pop(task_index)["task_name"]
+        if write_tasks(tasks):
+            print(f"'{task_name}' was removed from the list")
     else:
         print(f"Couldn't find task with ID: {task_id}")
 

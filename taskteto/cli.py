@@ -4,7 +4,7 @@ from taskteto.tasks import *
 
 
 def main():
-    tasks = load_tasks()
+    tasklist = load_tasks()
 
     parser = argparse.ArgumentParser()
 
@@ -47,21 +47,21 @@ def main():
     args = parser.parse_args()
 
     if args.action == "add":
-        add_task(args.task_name, tasks)
+        add_task(args.task_name, tasklist)
     elif args.action == "list":
         if args.done:
-            list_tasks_by_status(tasks, TaskStatus.DONE.value)
+            list_tasks_by_status(tasklist, TaskStatus.DONE.value)
         elif args.in_progress:
-            list_tasks_by_status(tasks, TaskStatus.IN_PROGRESS.value)
+            list_tasks_by_status(tasklist, TaskStatus.IN_PROGRESS.value)
         elif args.todo:
-            list_tasks_by_status(tasks, TaskStatus.TODO.value)
+            list_tasks_by_status(tasklist, TaskStatus.TODO.value)
         else:
-            list_tasks(tasks)
+            list_tasks(tasklist)
     elif args.action == "update":
-        update_task(args.task_id, args.new_task_name, tasks)
+        update_task(args.task_id, args.new_task_name, tasklist)
     elif args.action == "mark":
-        mark_task_status(args.task_id, args.task_status, tasks)
+        mark_task_status(args.task_id, args.task_status, tasklist)
     elif args.action == "delete":
-        delete_task(args.task_id, tasks)
+        delete_task(args.task_id, tasklist)
     else:
         parser.print_help()

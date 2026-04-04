@@ -11,10 +11,10 @@ def load_tasks():
         return []
 
 
-def write_tasks(tasks):
+def write_tasks(tasklist):
     try:
         with open(TASK_FILE, mode="w", encoding="utf-8") as f:
-            json.dump(tasks, f, indent=4)
+            json.dump(tasklist, f, indent=4)
         return True
     except OSError as e:
         print(f"Error saving tasks: {e}")

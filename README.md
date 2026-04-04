@@ -1,6 +1,6 @@
 # taskteto
 
-A simple task tracker CLI app built with Python.
+A simple task tracker CLI app built with argparse that writes your tasks to a JSON file.
 
 Project made for: https://roadmap.sh/projects/task-tracker
 
